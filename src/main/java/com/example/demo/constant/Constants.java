@@ -16,6 +16,7 @@ public class Constants {
     public static String TEAM = "일상회복본부 %s팀";
 
     public static List<String> NO_NEED_AUTH_URLS = List.of(
+            "/users/**",
             "/auth/reissue",
             "/oauth/login/kakao",
             "/oauth/login/kakao/callback",
