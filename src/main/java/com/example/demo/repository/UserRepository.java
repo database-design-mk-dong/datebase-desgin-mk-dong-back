@@ -23,18 +23,18 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("select u.id as id, u.role as role, u.password as password from User u where u.id = :id")
     Optional<UserSecurityForm> findFormById(@Param("id") UUID id);
 
-    @Query("select u.id as id, u.role as role, u.password as password from User u where u.id = :id and u.refreshToken = :refreshToken")
-    Optional<UserSecurityForm> findFormByIdAndRefreshToken(@Param("id") UUID id, @Param("refreshToken") String refreshToken);
-
-    @Query("select u.id as id, u.role as role, u.password as password from User u where u.serialId = :serialId and u.provider = :provider")
-    Optional<UserSecurityForm> findFormBySerialIdAndProvider(@Param("serialId") String serialId, @Param("provider") EProvider provider);
-
+//    @Query("select u.id as id, u.role as role, u.password as password from User u where u.id = :id and u.refreshToken = :refreshToken")
+//    Optional<UserSecurityForm> findFormByIdAndRefreshToken(@Param("id") UUID id, @Param("refreshToken") String refreshToken);
+//
+//    @Query("select u.id as id, u.role as role, u.password as password from User u where u.serialId = :serialId and u.provider = :provider")
+//    Optional<UserSecurityForm> findFormBySerialIdAndProvider(@Param("serialId") String serialId, @Param("provider") EProvider provider);
+//
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.refreshToken = :refreshToken where u.id = :id")
     void updateRefreshToken(UUID id, String refreshToken);
 
-    @Query("SELECT u.id FROM User u WHERE u.attendanceTime IS NOT NULL AND u.workEndTime > :currentDate")
-    List<UUID> findActiveUserIds(LocalDate currentDate);
+//    @Query("SELECT u.id FROM User u WHERE u.attendanceTime IS NOT NULL AND u.workEndTime > :currentDate")
+//    List<UUID> findActiveUserIds(LocalDate currentDate);
 
 
     interface UserSecurityForm {

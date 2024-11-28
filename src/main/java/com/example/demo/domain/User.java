@@ -1,10 +1,6 @@
 package com.example.demo.domain;
 
 import com.example.demo.domain.type.ERole;
-import com.example.demo.domain.type.EProvider;
-import com.example.demo.domain.type.ERole;
-import com.example.demo.dto.request.CreateOnBoardingRequestDto;
-import com.example.demo.dto.request.CreateRegisterRequestDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,6 +46,9 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "refresh_Token")
+    private String refreshToken;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
     private List<Farm> farms;
