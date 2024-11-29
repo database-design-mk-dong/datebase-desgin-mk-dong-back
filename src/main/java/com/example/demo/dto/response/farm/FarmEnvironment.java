@@ -1,7 +1,9 @@
 package com.example.demo.dto.response.farm;
 
 import com.example.demo.domain.Environment;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 
 @Builder
@@ -15,7 +17,7 @@ public record FarmEnvironment(
 //            "humidity": double,
 //            "ph": double,
 //            "rainfall": double
-            LocalDateTime timestamp,
+            String timestamp,
             Double n,
             Double p,
             Double k,
@@ -26,7 +28,7 @@ public record FarmEnvironment(
 ) {
     public static FarmEnvironment of(Environment environment) {
         return FarmEnvironment.builder()
-                .timestamp(environment.getTimestamp())
+                .timestamp(environment.getTimestamp().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .n(environment.getN())
                 .p(environment.getP())
                 .k(environment.getK())

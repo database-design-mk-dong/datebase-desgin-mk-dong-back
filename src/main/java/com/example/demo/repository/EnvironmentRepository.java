@@ -9,7 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface EnvironmentRepository extends JpaRepository<Environment, Long> {
-    Optional<Environment> findByFarm(Farm farm);
+    @Query("SELECT e FROM Environment e "
+            + "WHERE e.farm = :farm "
+            + "ORDER BY e.timestamp DESC "
+            + "LIMIT 1 ")
+    Optional<Environment> findByFarm(@Param("farm") Farm farm);
 
     @Query("SELECT e FROM Environment e "
             + "WHERE e.farm = :farm "

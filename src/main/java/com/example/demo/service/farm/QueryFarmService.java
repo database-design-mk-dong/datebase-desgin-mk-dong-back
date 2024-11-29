@@ -4,7 +4,9 @@ import com.example.demo.domain.Environment;
 import com.example.demo.domain.Farm;
 import com.example.demo.domain.FarmCrop;
 import com.example.demo.domain.User;
+import com.example.demo.dto.response.environment.ReadEnvironmentResponseDto;
 import com.example.demo.dto.response.farm.FarmEnvironment;
+import com.example.demo.dto.response.farm.ReadFarmDetailResponseDto;
 import com.example.demo.dto.response.farm.ReadFarmResponseDto;
 import com.example.demo.exception.CommonException;
 import com.example.demo.exception.ErrorCode;
@@ -44,15 +46,33 @@ public class QueryFarmService {
                 .toList();
     }
 
-    public ReadFarmResponseDto readFarmDetail(Long farmId, UUID uuid) {
+    public ReadFarmDetailResponseDto readFarmDetail(Long farmId, UUID uuid) {
         User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
         Farm farm = farmRepository.findByUserAndId(user, farmId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        return getFarmInfo(farm);
+        return getFarmEnvironmentFarm(farm);
     }
+
+    private ReadFarmDetailResponseDto getFarmEnvironmentFarm(Farm farm) {
+        FarmCrop farmCrop = farm.getFarmCrops().stream().findFirst()
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_CROP));
+        List<Environment> environments = environmentRepository.findAllByOrderByTimestampDesc(farm);
+
+        List<FarmEnvironment> farmEnvironments = environments.stream()
+                .map(FarmEnvironment::of)
+                .toList();
+
+        return ReadFarmDetailResponseDto.builder()
+                .farmId(farm.getId().intValue())
+                .farmName(farm.getFarmName())
+                .cropName(farmCrop.getCrop().getCropName())
+                .farmEnvironment(farmEnvironments)
+                .build();
+    }
+
 
     private ReadFarmResponseDto getFarmInfo(Farm farm) {
         FarmCrop farmCrop = farm.getFarmCrops().stream().findFirst()

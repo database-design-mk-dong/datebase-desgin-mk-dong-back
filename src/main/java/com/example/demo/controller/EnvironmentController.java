@@ -21,7 +21,7 @@ public class EnvironmentController {
     private final QueryEnvironmentService queryEnvironmentService;
     private final CommandEnvironmentService commandEnvironmentService;
 
-    @GetMapping("current_environment")
+    @GetMapping("/current_environment")
     public ResponseDto<?> getEnvironment(
             @RequestParam(name = "farmID") Long farmId,
             @UserId UUID userId
@@ -32,7 +32,7 @@ public class EnvironmentController {
     @PostMapping("")
     public ResponseDto<?> addEnvironment(
             @RequestBody CreateEnvironmentRequestDto createEnvironmentRequestDto,
-            @RequestParam Long farmId,
+            @RequestParam(name = "farmID") Long farmId,
             @UserId UUID userId
     ) {
         return ResponseDto.ok(commandEnvironmentService.createEnvironment(createEnvironmentRequestDto, userId, farmId));

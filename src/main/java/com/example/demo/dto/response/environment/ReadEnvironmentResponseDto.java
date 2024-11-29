@@ -2,11 +2,12 @@ package com.example.demo.dto.response.environment;
 
 import com.example.demo.domain.Environment;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 
 @Builder
 public record ReadEnvironmentResponseDto(
-        LocalDateTime timestamp,
+        String timestamp,
         Double n,
         Double p,
         Double k,
@@ -17,7 +18,7 @@ public record ReadEnvironmentResponseDto(
 ) {
     public static ReadEnvironmentResponseDto of(Environment environment) {
         return ReadEnvironmentResponseDto.builder()
-                .timestamp(environment.getTimestamp())
+                .timestamp(environment.getTimestamp().toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .n(environment.getN())
                 .p(environment.getP())
                 .k(environment.getK())
