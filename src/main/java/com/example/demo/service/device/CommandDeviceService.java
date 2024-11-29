@@ -35,7 +35,7 @@ public class CommandDeviceService {
         Farm farm = farmRepository.findByUserAndId(user, farmId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        Device device = deviceRepository.findByDeviceName(updateDeviceRequestDto.device())
+        Device device = deviceRepository.findById(updateDeviceRequestDto.deviceId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_DEVICE));
 
         FarmDevice farmDevice = farmDeviceRepository.findByFarmAndDevice(farm, device)

@@ -33,6 +33,7 @@ public class QueryDeviceService {
 
         return farm.getFarmDevices().stream()
                 .map(farmDevice -> DeviceInfo.builder()
+                        .deviceId(farmDevice.getId())
                         .device(farmDevice.getDevice().getDeviceName())
                         .status(farmDevice.getStatus())
                         .build()
