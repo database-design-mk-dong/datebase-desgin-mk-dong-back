@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailServiceById implements UserDetailsService, LoadUserPrincipalByIdUseCase {
     private final UserRepository userRepository;
 
-    /* TODO: 만약 사용할 시 구현 필요이 필요하지만 사용하지 않으므로 주석 처리함 */
     @Override
     public UserDetails loadUserByUsername(String username) {
         return null;

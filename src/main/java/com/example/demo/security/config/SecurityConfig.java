@@ -23,9 +23,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration
-@EnableWebSecurity
-@RequiredArgsConstructor
+
+@Configuration // 이 클래스가 Spring 구성 클래스임을 나타냄
+@EnableWebSecurity // Spring Security를 활성화
+@RequiredArgsConstructor // final 필드에 대한 생성자를 자동으로 생성
 public class SecurityConfig {
     private final CustomSignOutProcessHandler customSignOutProcessHandler;
     private final CustomSignOutResultHandler customSignOutResultHandler;
@@ -37,59 +38,45 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 Origin 추가
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        configuration.addExposedHeader("Authorization");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 
     @Bean
     protected SecurityFilterChain securityFilterChain(final HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                ) // 세션을 사용하지 않고 상태를 저장하지 않는 설정
 
                 .authorizeHttpRequests(registry ->
                         registry
-//                                .anyRequest().permitAll()
-                                .requestMatchers(Constants.NO_NEED_AUTH_URLS.toArray(String[]::new)).permitAll()
-                                .requestMatchers(Constants.ADMIN_URLS.toArray(String[]::new)).hasRole("ADMIN")
-                                .requestMatchers(Constants.USER_URLS.toArray(String[]::new)).hasAnyRole("USER", "ADMIN")
-                                .anyRequest().authenticated()
+                                .requestMatchers(Constants.NO_NEED_AUTH_URLS.toArray(String[]::new)).permitAll() // 인증이 필요 없는 URL 설정
+                                .requestMatchers(Constants.ADMIN_URLS.toArray(String[]::new)).hasRole("ADMIN") // 관리자 권한이 필요한 URL 설정
+                                .requestMatchers(Constants.USER_URLS.toArray(String[]::new)).hasAnyRole("USER", "ADMIN") // 사용자 또는 관리자 권한이 필요한 URL 설정
+                                .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
 
-                .formLogin(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
 
                 .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
-                        .addLogoutHandler(customSignOutProcessHandler)
-                        .logoutSuccessHandler(customSignOutResultHandler)
+                        .logoutUrl("/auth/logout") // 로그아웃 URL 설정
+                        .addLogoutHandler(customSignOutProcessHandler) // 커스텀 로그아웃 처리기 추가
+                        .logoutSuccessHandler(customSignOutResultHandler) // 로그아웃 성공 처리기 설정
                 )
 
                 .exceptionHandling((exceptionHandling) ->
                         exceptionHandling
-                                .authenticationEntryPoint(jwtAuthEntryPoint)
-                                .accessDeniedHandler(jwtAccessDeniedHandler)
+                                .authenticationEntryPoint(jwtAuthEntryPoint) // 인증 실패 시 처리할 엔트리 포인트 설정
+                                .accessDeniedHandler(jwtAccessDeniedHandler) // 접근 거부 시 처리할 핸들러 설정
                 )
 
                 .addFilterBefore(
                         new JwtAuthenticationFilter(loadUserPrincipalByIdUseCase, jwtUtil),
-                        LogoutFilter.class)
+                        LogoutFilter.class) // JWT 인증 필터 추가
                 .addFilterBefore(
                         new JwtExceptionFilter(),
-                        JwtAuthenticationFilter.class)
+                        JwtAuthenticationFilter.class) // JWT 예외 처리 필터 추가
 
-                .getOrBuild();
+                .getOrBuild(); // SecurityFilterChain 빌드 및 반환
     }
 }
